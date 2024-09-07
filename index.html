@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.56">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Vestin Hategekimana">
+
+<title>Divorce in Switzerland</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="index_files/libs/clipboard/clipboard.min.js"></script>
+<script src="index_files/libs/quarto-html/quarto.js"></script>
+<script src="index_files/libs/quarto-html/popper.min.js"></script>
+<script src="index_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="index_files/libs/quarto-html/anchor.min.js"></script>
+<link href="index_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="index_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="index_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="index_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="index_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="index_files/libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+
+<link href="index_files/libs/gwalkr-1.0.0/style.css" rel="stylesheet">
+
+<script src="index_files/libs/gwalkr-1.0.0/gwalkr-app.iife.js"></script>
+
+<script src="index_files/libs/gwalkr-binding-0.1.5/gwalkr.js"></script>
+
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Divorce in Switzerland</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Vestin Hategekimana </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="divorce-dataset-from-the-swiss-federal-statistical-office" class="level2">
+<h2 class="anchored" data-anchor-id="divorce-dataset-from-the-swiss-federal-statistical-office">Divorce dataset from the Swiss Federal Statistical Office</h2>
+<p>Here is a divorce <a href="https://www.pxweb.bfs.admin.ch/pxweb/fr/px-x-0102020203_103/-/px-x-0102020203_103.px/">dataset</a> from the Swiss Federal Statistical Office that you can explore using the <a href="https://github.com/Kanaries/GWalkR">GWalkR</a> package in R (see below). First let’s clean it a bit.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Libraries</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, janitor, GWalkR)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Data cleaning</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>divorce <span class="ot">&lt;-</span> </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read.csv</span>(<span class="st">"data/divorce_niveau_suisse.csv"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">clean_names</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">year =</span> annee,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">marriage_duration =</span> duree_du_mariage,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">partner_1 =</span> nationalite_categorie_partenaire_1,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">swiss =</span> suisse,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>         <span class="at">foreigner =</span> etranger) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">str_detect</span>(marriage_duration, <span class="st">"total"</span>),</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>         <span class="sc">!</span><span class="fu">str_detect</span>(partner_1, <span class="st">"total"</span>),</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>         <span class="sc">!</span><span class="fu">str_detect</span>(foreigner, <span class="st">"..."</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(swiss<span class="sc">:</span>foreigner,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">"partner_2"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">value =</span> <span class="fu">as.integer</span>(value),</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>         <span class="at">marriage_duration =</span> <span class="fu">str_replace</span>(marriage_duration, <span class="st">"ans"</span>, <span class="st">"years"</span>),</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>         <span class="at">marriage_duration =</span> <span class="fu">str_replace</span>(marriage_duration, <span class="st">"ou plus"</span>, <span class="st">"or more"</span>),</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">partner_1 =</span> <span class="fu">if_else</span>(partner_1 <span class="sc">==</span> <span class="st">"Suisse"</span>,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>                                         <span class="st">"swiss"</span>, <span class="st">"foreigner"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">unite</span>(partner_1<span class="sc">:</span>partner_2,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>                 <span class="at">col =</span> couple_nationality,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>                 <span class="at">sep =</span> <span class="st">" - "</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(value),</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>              <span class="at">.by =</span> <span class="fu">c</span>(year, marriage_duration, couple_nationality))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Now let’s explore the dataset:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gwalkr</span>(divorce)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="htmlwidget-329fe3035ffde21c2a2b" style="width:100%;height:100%;" class="gwalkr html-widget"></div>
+<script type="application/json" data-for="htmlwidget-329fe3035ffde21c2a2b">{"x":{"dataSource":[{"eWVhcg==":1984,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1848},{"eWVhcg==":1984,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1984,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2043},{"eWVhcg==":1984,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1984,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1861},{"eWVhcg==":1984,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1984,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1485},{"eWVhcg==":1984,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1984,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1764},{"eWVhcg==":1984,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1985,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1783},{"eWVhcg==":1985,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1985,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2167},{"eWVhcg==":1985,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1985,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1735},{"eWVhcg==":1985,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1985,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1499},{"eWVhcg==":1985,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1985,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1897},{"eWVhcg==":1985,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1986,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1895},{"eWVhcg==":1986,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1986,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2137},{"eWVhcg==":1986,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1986,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1596},{"eWVhcg==":1986,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1986,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1473},{"eWVhcg==":1986,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1986,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2021},{"eWVhcg==":1986,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1987,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1851},{"eWVhcg==":1987,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1987,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2175},{"eWVhcg==":1987,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1987,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1574},{"eWVhcg==":1987,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1987,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1527},{"eWVhcg==":1987,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1987,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2084},{"eWVhcg==":1987,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1988,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2014},{"eWVhcg==":1988,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1988,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2420},{"eWVhcg==":1988,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1988,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1635},{"eWVhcg==":1988,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1988,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1573},{"eWVhcg==":1988,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1988,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2321},{"eWVhcg==":1988,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1989,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2062},{"eWVhcg==":1989,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1989,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2384},{"eWVhcg==":1989,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1989,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1605},{"eWVhcg==":1989,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1989,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1383},{"eWVhcg==":1989,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1989,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2321},{"eWVhcg==":1989,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1990,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2225},{"eWVhcg==":1990,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1990,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2446},{"eWVhcg==":1990,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1990,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1605},{"eWVhcg==":1990,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1990,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1326},{"eWVhcg==":1990,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1990,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2353},{"eWVhcg==":1990,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1991,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2359},{"eWVhcg==":1991,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1991,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2521},{"eWVhcg==":1991,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1991,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1726},{"eWVhcg==":1991,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1991,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1272},{"eWVhcg==":1991,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1991,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2380},{"eWVhcg==":1991,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1992,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2507},{"eWVhcg==":1992,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":3},{"eWVhcg==":1992,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2676},{"eWVhcg==":1992,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1992,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1850},{"eWVhcg==":1992,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1992,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1317},{"eWVhcg==":1992,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1992,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2490},{"eWVhcg==":1992,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1993,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2492},{"eWVhcg==":1993,"bWFycmlhZ2VfZHVyYXRpb24=":"0-4 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":43},{"eWVhcg==":1993,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2954},{"eWVhcg==":1993,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1993,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1848},{"eWVhcg==":1993,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1993,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1286},{"eWVhcg==":1993,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1993,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2605},{"eWVhcg==":1993,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1994,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":3142},{"eWVhcg==":1994,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1994,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1964},{"eWVhcg==":1994,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1994,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1309},{"eWVhcg==":1994,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1994,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2685},{"eWVhcg==":1994,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1995,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":3344},{"eWVhcg==":1995,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1995,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2138},{"eWVhcg==":1995,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1995,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1345},{"eWVhcg==":1995,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1995,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2676},{"eWVhcg==":1995,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1996,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":3503},{"eWVhcg==":1996,"bWFycmlhZ2VfZHVyYXRpb24=":"5-9 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1996,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2220},{"eWVhcg==":1996,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1996,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1495},{"eWVhcg==":1996,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1996,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2827},{"eWVhcg==":1996,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1997,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2370},{"eWVhcg==":1997,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1997,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1621},{"eWVhcg==":1997,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1997,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":3008},{"eWVhcg==":1997,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":0},{"eWVhcg==":1998,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2473},{"eWVhcg==":1998,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":47},{"eWVhcg==":1998,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1677},{"eWVhcg==":1998,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":37},{"eWVhcg==":1998,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":3026},{"eWVhcg==":1998,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":46},{"eWVhcg==":1999,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2956},{"eWVhcg==":1999,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":39},{"eWVhcg==":1999,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2024},{"eWVhcg==":1999,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":43},{"eWVhcg==":1999,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":3613},{"eWVhcg==":1999,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":71},{"eWVhcg==":2000,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1481},{"eWVhcg==":2000,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":30},{"eWVhcg==":2000,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1003},{"eWVhcg==":2000,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":22},{"eWVhcg==":2000,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1832},{"eWVhcg==":2000,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":35},{"eWVhcg==":2001,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2539},{"eWVhcg==":2001,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":40},{"eWVhcg==":2001,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1584},{"eWVhcg==":2001,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":41},{"eWVhcg==":2001,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2871},{"eWVhcg==":2001,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":59},{"eWVhcg==":2002,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2585},{"eWVhcg==":2002,"bWFycmlhZ2VfZHVyYXRpb24=":"10-14 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":96},{"eWVhcg==":2002,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1795},{"eWVhcg==":2002,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":44},{"eWVhcg==":2002,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2940},{"eWVhcg==":2002,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":59},{"eWVhcg==":2003,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":1876},{"eWVhcg==":2003,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":41},{"eWVhcg==":2003,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":3149},{"eWVhcg==":2003,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":82},{"eWVhcg==":2004,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2104},{"eWVhcg==":2004,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":31},{"eWVhcg==":2004,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":3465},{"eWVhcg==":2004,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":76},{"eWVhcg==":2005,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2739},{"eWVhcg==":2005,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":30},{"eWVhcg==":2005,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":4493},{"eWVhcg==":2005,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":93},{"eWVhcg==":2006,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2793},{"eWVhcg==":2006,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":38},{"eWVhcg==":2006,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":4623},{"eWVhcg==":2006,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":79},{"eWVhcg==":2007,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":2482},{"eWVhcg==":2007,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":69},{"eWVhcg==":2007,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":4543},{"eWVhcg==":2007,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":65},{"eWVhcg==":2008,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":4531},{"eWVhcg==":2008,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":53},{"eWVhcg==":2009,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":4411},{"eWVhcg==":2009,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":41},{"eWVhcg==":2010,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":5176},{"eWVhcg==":2010,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":55},{"eWVhcg==":2011,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"foreigner - swiss","bg==":199},{"eWVhcg==":2011,"bWFycmlhZ2VfZHVyYXRpb24=":"15-19 years","Y291cGxlX25hdGlvbmFsaXR5":"foreigner - foreigner","bg==":89},{"eWVhcg==":2011,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":4590},{"eWVhcg==":2011,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":23},{"eWVhcg==":2011,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"foreigner - swiss","bg==":302},{"eWVhcg==":2011,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"foreigner - foreigner","bg==":78},{"eWVhcg==":2012,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":4606},{"eWVhcg==":2012,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":52},{"eWVhcg==":2012,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"foreigner - swiss","bg==":308},{"eWVhcg==":2012,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"foreigner - foreigner","bg==":83},{"eWVhcg==":2013,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":4480},{"eWVhcg==":2013,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":78},{"eWVhcg==":2014,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - swiss","bg==":4533},{"eWVhcg==":2014,"bWFycmlhZ2VfZHVyYXRpb24=":"20 years or more","Y291cGxlX25hdGlvbmFsaXR5":"swiss - foreigner","bg==":79}],"rawFields":[{"fid":"eWVhcg==","name":"year","semanticType":"quantitative","analyticType":"measure"},{"fid":"bWFycmlhZ2VfZHVyYXRpb24=","name":"marriage_duration","semanticType":"nominal","analyticType":"dimension"},{"fid":"Y291cGxlX25hdGlvbmFsaXR5","name":"couple_nationality","semanticType":"nominal","analyticType":"dimension"},{"fid":"bg==","name":"n","semanticType":"quantitative","analyticType":"measure"}],"i18nLang":"en","visSpec":null,"dark":"light","toolbarExclude":[]},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

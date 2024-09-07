@@ -1,0 +1,47 @@
+---
+title: "Divorce in Switzerland"
+author: "Vestin Hategekimana"
+format: html
+editor: visual
+code-fold: true
+---
+
+## Divorce dataset from the Swiss Federal Statistical Office
+
+Here is a divorce [dataset](https://www.pxweb.bfs.admin.ch/pxweb/fr/px-x-0102020203_103/-/px-x-0102020203_103.px/) from the Swiss Federal Statistical Office that you can explore using the [GWalkR](https://github.com/Kanaries/GWalkR) package in R (see below). First let's clean it a bit.
+
+```{r}
+# Libraries
+pacman::p_load(tidyverse, janitor, GWalkR)
+
+# Data cleaning
+divorce <- 
+  read.csv("data/divorce_niveau_suisse.csv") %>% 
+  clean_names() %>% 
+  select(year = annee,
+         marriage_duration = duree_du_mariage,
+         partner_1 = nationalite_categorie_partenaire_1,
+         swiss = suisse,
+         foreigner = etranger) %>% 
+  filter(!str_detect(marriage_duration, "total"),
+         !str_detect(partner_1, "total"),
+         !str_detect(foreigner, "...")) %>% 
+  pivot_longer(swiss:foreigner,
+               names_to = "partner_2") %>% 
+  mutate(value = as.integer(value),
+         marriage_duration = str_replace(marriage_duration, "ans", "years"),
+         marriage_duration = str_replace(marriage_duration, "ou plus", "or more"),
+         partner_1 = if_else(partner_1 == "Suisse",
+                                         "swiss", "foreigner")) %>% 
+    tidyr::unite(partner_1:partner_2,
+                 col = couple_nationality,
+                 sep = " - ") %>% 
+    summarise(n = sum(value),
+              .by = c(year, marriage_duration, couple_nationality))
+```
+
+Now let's explore the dataset:
+
+```{r}
+gwalkr(divorce)
+```
